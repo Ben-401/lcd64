@@ -2,5 +2,8 @@
 # built from c-source
 src/monitor_load
 
+# built from asm
+src/asm/test01prg*
+
 # cloned
 Ophis
