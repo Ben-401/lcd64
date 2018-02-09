@@ -11,12 +11,22 @@ _next:   .word 0
          .checkpc 2079
          .advance 2079
 
-
          lda $0400	; read from top-left of screen
          adc #$01	; add one
          sta $0400	; store to screen
          and #$0f	; mask lower bits
          sta $d020	; store in border
+
+	ldx #$00
+loop:	lda hello,x
+	beq done
+	jsr $ffd2
+	inx
+	bne loop
+done:
          rts		; exit
+
+hello:	.byte "HELLO WORLD.", 0
+
 
          .scend
