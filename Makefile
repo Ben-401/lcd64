@@ -2,13 +2,25 @@
 COPT=	-Wall -g -std=c99
 CC=	gcc
 
+# for cc65 (c-code)
+CC65=   /usr/local/bin/cc65
+CL65=   /usr/local/bin/cl65
+COPTS=  -t c64 -O -Or -Oi -Os --cpu 6502
+LOPTS=  
+
+
+
+
 TOOLS=	src/tools/monitor_load
 
 3RDPARTY=	Ophis/bin/ophis
 
+CCODE=	src/c/vicii.prg
+
 ASM=	src/asm/test01prg.prg
 
-all:	$(TOOLS) $(3RDPARTY) $(ASM)
+all:	$(TOOLS) $(3RDPARTY) $(ASM) $(CCODE)
+
 
 # ============================ OK
 Ophis/src/Ophis/Main.py:
@@ -22,6 +34,19 @@ src/asm/test01prg.prg:	src/asm/test01prg.a65
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Making: src/asm/test01prg.prg)
 	./Ophis/bin/ophis -4 src/asm/test01prg.a65 -l src/asm/test01prg.list -m src/asm/test01prg.map
+
+# ============================ OK
+# for cc65
+%.s:    %.c $(HEADERS) $(DATAFILES)
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> cc65: using $@ $<)
+	$(CC65) $(COPTS) -o $@ $<
+
+# ============================ OK, sourced from https://github.com/MEGA65/mega65-core/blob/px100mhz/src/tests/vicii.c
+src/c/vicii.prg:	src/c/vicii.s
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> Making: src/c/vicii.prg)
+	$(CL65) $(COPTS) $(LOPTS) -o src/c/vicii.prg src/c/vicii.s
 
 # ============================ OK
 src/tools/monitor_load:	src/tools/monitor_load.c
@@ -69,10 +94,23 @@ prog-test01:	$(TOOLS) $(3RDPARTY) $(ASM)
 		-C bin-prebuilt/CHARROM.M65 \
 		-4 src/asm/test01prg.prg
 
+# ============================ OK
+prog-cvicii:	$(TOOLS) $(3RDPARTY) $(CCODE)
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> Programming vicii)
+	sudo src/tools/monitor_load \
+		-l /dev/ttyUSB1 \
+		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
+		-k bin-prebuilt/KICKUP.M65 \
+		-R MEGA65.ROM \
+		-C bin-prebuilt/CHARROM.M65 \
+		-4 src/c/vicii.prg
+
 # ============================
 clean:
 	rm -f src/tools/monitor_load
 	rm -f src/asm/test01prg.prg src/asm/test01prg.list src/asm/test01prg.map
+	rm -f src/c/vicii.prg src/c/vicii.o src/c/vicii.s
 	$(warning Not removing Ophis)
 
 # ============================ not needed

@@ -35,6 +35,19 @@ The Ubuntu o/s can be used to interface with the c64, using a serial-port progra
 you may need to change the tty#  
 yes, the baud-rate is 2Mbit.  
 
-# resources
+## resources
 
 https://michaelcmartin.github.io/Ophis/book/book1.html
+
+## compiler -- cc65
+
+you are recommended to use the cc65 program to write ```c``` programs and have them compiled into ```6502``` assembly.  
+refer to  
+https://wiki.nesdev.com/w/index.php/Installing_CC65  
+section ```Building from git```  
+
+## compiler -- Ophis
+
+the current build incorporates Ophis, which compiles ASM into machine code.  
+PGS has suggested that we want to phase away from Ophis, but for now I will leave it in until confidence is gained from cc65.
+
