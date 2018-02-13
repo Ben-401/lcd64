@@ -14,6 +14,7 @@ command(s) to run:
 ```make prog``` - makes all and then programs the board to goto c64 mode  
 ```make prog-com``` - makes all and then programs the board with a game (commando)  
 ```make prog-test01``` - makes all and then programs the board with the ```test01prg```  
+```make prog-cvivii``` - makes all and then programs the board with the ```vivii.prg```  
 
 ## hardware setup
 
