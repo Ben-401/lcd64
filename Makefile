@@ -2,7 +2,7 @@
 COPT=	-Wall -g -std=c99
 CC=	gcc
 
-TOOLS=	src/monitor_load
+TOOLS=	src/tools/monitor_load
 
 3RDPARTY=	Ophis/bin/ophis
 
@@ -24,16 +24,20 @@ src/asm/test01prg.prg:	src/asm/test01prg.a65
 	./Ophis/bin/ophis -4 src/asm/test01prg.a65 -l src/asm/test01prg.list -m src/asm/test01prg.map
 
 # ============================ OK
-src/monitor_load:	src/monitor_load.c
+src/tools/monitor_load:	src/tools/monitor_load.c
 	$(warning =============================================================)
-	$(warning ~~~~~~~~~~~~~~~~> Making: src/monitor_load)
-	$(CC) $(COPT) -o src/monitor_load src/monitor_load.c
+	$(warning ~~~~~~~~~~~~~~~~> Making: src/tools/monitor_load)
+	$(CC) $(COPT) -o src/tools/monitor_load src/tools/monitor_load.c
 
+# ============================ OK
+# ============================ OK
+# BELOW ARE TOPLEVEL TARGETS USED FOR PROGRAMMING THE FPGA
+# ============================ OK
 # ============================ OK
 prog:	$(TOOLS) $(3RDPARTY)
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Programming to c64 mode)
-	sudo src/monitor_load \
+	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
 		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
 		-k bin-prebuilt/KICKUP.M65 \
@@ -45,7 +49,7 @@ prog:	$(TOOLS) $(3RDPARTY)
 prog-com:	$(TOOLS) $(3RDPARTY)
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Programming commando)
-	sudo src/monitor_load \
+	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
 		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
 		-k bin-prebuilt/KICKUP.M65 \
@@ -57,7 +61,7 @@ prog-com:	$(TOOLS) $(3RDPARTY)
 prog-test01:	$(TOOLS) $(3RDPARTY) $(ASM)
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Programming test01prg)
-	sudo src/monitor_load \
+	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
 		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
 		-k bin-prebuilt/KICKUP.M65 \
@@ -67,7 +71,7 @@ prog-test01:	$(TOOLS) $(3RDPARTY) $(ASM)
 
 # ============================
 clean:
-	rm -f src/monitor_load
+	rm -f src/tools/monitor_load
 	rm -f src/asm/test01prg.prg src/asm/test01prg.list src/asm/test01prg.map
 	$(warning Not removing Ophis)
 
