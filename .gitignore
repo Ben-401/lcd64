@@ -1,9 +1,16 @@
 
 # built from c-source
-src/monitor_load
+src/tools/monitor_load
 
 # built from asm
-src/asm/test01prg*
+src/asm/*.prg
+src/asm/*.map
+src/asm/*.list
+
+# built from cc65
+src/c/*.prg
+src/c/*.s
+src/c/*.o
 
 # cloned
 Ophis
