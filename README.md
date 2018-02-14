@@ -16,6 +16,8 @@ command(s) to run:
 ```make prog-test01``` - makes all and then programs the board with the ```test01prg```  
 ```make prog-cvivii``` - makes all and then programs the board with the ```vivii.prg```  
 
+some doco in ```./doc```
+
 ## hardware setup
 
 nexys4ddr board VGA to vga monitor  
