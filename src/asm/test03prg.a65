@@ -1,0 +1,47 @@
+         .outfile "src/asm/test03prg.prg"
+;
+; this implements a machine-code program
+; to try and adjust the vsync and hsync registers
+; to move the LCD-display around,
+; but really only just copies the registers at $D000 to $1000
+; for examination using the serial monitor.
+;
+
+         .word $0801
+         .org  $0801
+
+         .scope
+
+; lines 10,20 set the c64 to be able to see memory mapped registers
+; seems this should be turned off when viewing non-MEGA65 registers (not fully understood).
+         .word _next10, 10
+         .byte $97, "53295,71",0 ; POKE $D02F,$47
+_next10:
+         .word _next20, 20
+         .byte $97, "53295,83",0 ; POKE $D02F,$53
+_next20:
+
+         .word _next100, 100
+         .byte $9e     ; SYS
+         .byte " 2096" ; 2096 ($0830)
+         .byte 0
+_next100:
+         .byte 0,0   ; end of BASIC
+
+         .checkpc 2096
+         .advance 2096
+
+entry_point:	; starts at 2096 = $0830
+
+;         lda #$00
+;         sta $d020
+;         inc $d021
+         ldx #$00
+h1:      lda $d000,x
+         sta $1000,x
+         inx
+         bne h1
+         inc $d020
+         rts
+
+         .scend
