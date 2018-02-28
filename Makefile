@@ -17,7 +17,8 @@ TOOLS=	src/tools/monitor_load
 
 CCODE=	src/c/vicii.prg
 
-ASM=	src/asm/test01prg.prg
+ASM=	src/asm/test01prg.prg \
+        src/asm/test02prg.prg
 
 all:	$(TOOLS) $(3RDPARTY) $(ASM) $(CCODE)
 
@@ -34,6 +35,12 @@ src/asm/test01prg.prg:	src/asm/test01prg.a65
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Making: src/asm/test01prg.prg)
 	./Ophis/bin/ophis -4 src/asm/test01prg.a65 -l src/asm/test01prg.list -m src/asm/test01prg.map
+
+# ============================ OK
+src/asm/test02prg.prg:	src/asm/test02prg.a65
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> Making: src/asm/test02prg.prg)
+	./Ophis/bin/ophis -4 src/asm/test02prg.a65 -l src/asm/test02prg.list -m src/asm/test02prg.map
 
 # ============================ OK
 # for cc65
@@ -71,6 +78,19 @@ prog:	$(TOOLS) $(3RDPARTY)
 		-4
 
 # ============================ OK
+prog-bit:	$(TOOLS) $(3RDPARTY)
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> Programming to c64 mode with USER-SUPPLIED BITFILE)
+	$(warning ~~~~~~~~~~~~~~~~> To use, do >$ make BITFILE=./../../bin/nexys4ddr.bit prog-bit)
+	sudo src/tools/monitor_load \
+		-l /dev/ttyUSB1 \
+		-b ${BITFILE} \
+		-k bin-prebuilt/KICKUP.M65 \
+		-R MEGA65.ROM \
+		-C bin-prebuilt/CHARROM.M65 \
+		-4
+
+# ============================ OK
 prog-com:	$(TOOLS) $(3RDPARTY)
 	$(warning =============================================================)
 	$(warning ~~~~~~~~~~~~~~~~> Programming commando)
@@ -93,6 +113,18 @@ prog-test01:	$(TOOLS) $(3RDPARTY) $(ASM)
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
 		-4 src/asm/test01prg.prg
+
+# ============================ OK
+prog-test02:	$(TOOLS) $(3RDPARTY) $(ASM)
+	$(warning =============================================================)
+	$(warning ~~~~~~~~~~~~~~~~> Programming test02prg)
+	sudo src/tools/monitor_load \
+		-l /dev/ttyUSB1 \
+		-b bin-prebuilt/nexys4ddr.bit \
+		-k bin-prebuilt/KICKUP.M65 \
+		-R MEGA65.ROM \
+		-C bin-prebuilt/CHARROM.M65 \
+		-4 src/asm/test02prg.prg
 
 # ============================ OK
 prog-cvicii:	$(TOOLS) $(3RDPARTY) $(CCODE)
