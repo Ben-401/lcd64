@@ -1,22 +1,7 @@
          .outfile "src/asm/test02prg.prg"
 ;
-; this implements a basic program
-; to test/verify that the reading and writing of the memory-mapped
-; registers works as expected.
-;
-; currently, the 16x registers at $D0Ex are mapped to the buffereduart module.
-; currently, we only use D0E0-D0E3.
-; expect that:
-; reading D0E0 returns the value of an internal register (reg_D0E0)
-; reading D0E0 also sets all 4x regs to #$FF
-; reading D0E1 returns the value of an internal register (reg_D0E1)
-; reading D0E2 returns the value of an internal register (reg_D0E2)
-; reading D0E3 returns the value of an internal register (reg_D0E3)
-; writing D0E0 also sets all 4x regs to #$00
-; writing D0E1 rolls all 4x regs down
-; writing D0E2 rolls all 4x regs up
-; writing D0E3 sets registers to 01,03,04,05 respectively
-
+; this implements a machine-code program
+; to test/verify that the UARTs are working
 
          .word $0801
          .org  $0801
@@ -32,79 +17,20 @@ _next10:
 _next20:
 
          .word _next100, 100
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53472"   ; $D0E0
-         .byte $29,$29,0 ; ))
+         .byte $9e     ; SYS
+         .byte " 2096" ; 2096 ($0830)
+         .byte 0
 _next100:
+         .byte 0,0   ; end of BASIC
 
-         .word _next110, 110
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53472"   ; $D0E0
-         .byte $29,$29,0 ; ))
-_next110:
+         .checkpc 2096
+         .advance 2096
 
+entry_point:	; starts at 2096 = $0830
 
-         .word _next120, 120
-         .byte $97, "53475,0",0 ; POKE $D0E3,0
-_next120:
-
-
-; all regs should now be set to 01,03,04,05
-
-         .word _next130, 130
-         .byte $99, $28      ; PRINT(
-         .byte $c2, $28      ; PEEK(
-         .byte "53475"       ; $D0E3
-         .byte $29,$29,";",0 ; ))
-_next130:
-
-         .word _next140, 140
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53474"   ; $D0E2
-         .byte $29,$29,";",0 ; ))
-_next140:
-
-         .word _next150, 150
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53473"   ; $D0E1
-         .byte $29,$29,0 ; ))
-_next150:
-
-
-; now lets roll up
-
-         .word _next160, 160
-         .byte $97, "53473,0",0 ; POKE $D0E1,0
-_next160:
-
-; and view 1-3
-
-         .word _next170, 170
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53475"   ; $D0E3
-         .byte $29,$29,";",0 ; ))
-_next170:
-
-         .word _next180, 180
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53474"   ; $D0E2
-         .byte $29,$29,";",0 ; ))
-_next180:
-
-         .word _next190, 190
-         .byte $99, $28  ; PRINT(
-         .byte $c2, $28  ; PEEK(
-         .byte "53473"   ; $D0E1
-         .byte $29,$29,0 ; ))
-_next190:
-
-
-         .byte 0,0
+         lda #$00
+         sta $d020
+         inc $d021
+         rts
 
          .scend
