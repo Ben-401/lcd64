@@ -78,7 +78,7 @@ prog:	$(TOOLS) $(3RDPARTY)
 	$(warning ~~~~~~~~~~~~~~~~> Programming to c64 mode)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
@@ -103,7 +103,7 @@ prog-com:	$(TOOLS) $(3RDPARTY)
 	$(warning ~~~~~~~~~~~~~~~~> Programming commando)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
@@ -115,7 +115,7 @@ prog-test01:	$(TOOLS) $(3RDPARTY) $(ASM)
 	$(warning ~~~~~~~~~~~~~~~~> Programming test01prg)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
@@ -127,7 +127,7 @@ prog-test02:	$(TOOLS) $(3RDPARTY) $(ASM)
 	$(warning ~~~~~~~~~~~~~~~~> Programming test02prg)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/nexys4ddr.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
@@ -139,7 +139,7 @@ prog-test03:	$(TOOLS) $(3RDPARTY) $(ASM)
 	$(warning ~~~~~~~~~~~~~~~~> Programming test03prg)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/lcd4ddr.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \
@@ -151,7 +151,7 @@ prog-cvicii:	$(TOOLS) $(3RDPARTY) $(CCODE)
 	$(warning ~~~~~~~~~~~~~~~~> Programming vicii)
 	sudo src/tools/monitor_load \
 		-l /dev/ttyUSB1 \
-		-b bin-prebuilt/nexys4ddr-px100m-17ad715-20180208.12.bit \
+		-b bin-prebuilt/bitfile.link \
 		-k bin-prebuilt/KICKUP.M65 \
 		-R MEGA65.ROM \
 		-C bin-prebuilt/CHARROM.M65 \

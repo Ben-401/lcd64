@@ -16,6 +16,15 @@ command(s) to run:
 ```make prog-test01``` - makes all and then programs the board with the ```test01prg```  
 ```make prog-cvivii``` - makes all and then programs the board with the ```vivii.prg```  
 
+to change the default bitfile, do:
+```
+>/$ cd bin-prebuilt
+>bin-prebuilt/$ rm bitfile.link
+>bin-prebuilt/$ ln -s alternate.bit bitfile.link
+>bin-prebuilt/$ cd ..
+>/$
+```
+
 some doco in ```./doc```
 
 ## hardware setup
