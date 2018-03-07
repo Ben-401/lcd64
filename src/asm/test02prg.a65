@@ -18,19 +18,197 @@ _next20:
 
          .word _next100, 100
          .byte $9e     ; SYS
-         .byte " 2096" ; 2096 ($0830)
+         .byte " 4096" ; 4096 ($1000)
          .byte 0
 _next100:
          .byte 0,0   ; end of BASIC
 
-         .checkpc 2096
-         .advance 2096
+         .checkpc $1000
+         .advance $1000
 
-entry_point:	; starts at 2096 = $0830
+entry_point:	; starts at 4096 = $1000
 
-         lda #$00
+; debug
+         lda #$01
          sta $d020
          inc $d021
-         rts
 
-         .scend
+; print the usage info
+	ldx #$00
+print_start:
+	lda STR_start,x
+	beq cont_start
+	jsr $ffd2 ; print accumulator to screen, moving cursor etc
+	inx
+	jmp print_start
+STR_start:
+	.byte "PRESS X TO QUIT", $0d
+	.byte "PRESS A TO TX ABC", $0d
+	.byte "PRESS B TO DISPLAY RX", $0d
+	.byte "PRESS C TO RX", $0d
+        .byte 0
+cont_start:
+
+	lda #$23
+	jsr checkpoint_bytetohex_and_print ; hex-value in .A-register
+
+         ; setup uart 2 to speed 115200
+	lda #$b2
+	sta $d0ee  ; LSB of baud
+	lda #$01
+	sta $d0ef  ; MSB of baud
+
+
+;====	====
+scan_again:
+	jsr check_uart
+	jsr $ffe4 ; CHRIN, returns 0 if no char, else the char
+	beq scan_again
+	cmp #$41+23 ; "x"
+	beq exit
+	; must have been a char
+
+	cmp #$41
+	bne not_key_A
+	; key "a" was pressed, so do something
+	jsr pressed_A
+	jmp scan_again
+not_key_A:
+
+	cmp #$42
+	bne not_key_B
+	; key "b" was pressed, so do something
+	jsr pressed_B
+	jmp scan_again
+not_key_B:
+
+	cmp #$43
+	bne not_key_C
+	; key "c" was pressed, so do something
+	jsr pressed_C
+	jmp scan_again
+not_key_C:
+
+	; must have been another char not recognised.
+	; so lets transmit this
+	jsr $ffd2 ; CHROUT
+	sta $d0e8 ; TX
+	; and print the code TXed to screen
+	jsr checkpoint_bytetohex_and_print
+	jmp scan_again
+exit:
+	rts
+
+;====	====
+check_uart:
+	; checks the status of the uart and compares that status to the previous status,
+	; if there is a change noticed in the status, print the change in status
+
+	; save previous state of status
+	lda u2stat_now
+	sta u2stat_prev
+
+	; get new status
+	lda $d0e9  ; status of UART 2
+	sta u2stat_now
+	cmp u2stat_prev
+	beq check_uart_end
+
+	; a change in the uart status has been detected,
+	; print the new value of status
+	jsr checkpoint_bytetohex_and_print ; hex-value in .A-register
+
+check_uart_end:
+	rts
+u2stat_now:
+	.byte 0
+u2stat_prev:
+	.byte 0
+
+;====	====
+pressed_A:
+	; TX the string "ABC"
+	lda #$41
+	sta $d0e8
+	lda #$42
+	sta $d0e8
+	lda #$43
+	sta $d0e8
+	rts
+
+;====	====
+pressed_B:
+	; display the RX status
+	lda $d0e9  ; status of UART 2
+	jsr checkpoint_bytetohex_and_print ; hex-value in .A-register
+	rts
+
+
+;====	====
+pressed_C:
+	; pop a RX char and print it to the screen
+	lda $d0e8
+	jsr checkpoint_bytetohex_and_print ; hex-value in .A-register
+	rts
+
+
+
+;====	====
+; copied from mega65-core
+checkpoint_bytetohex:
+	; BG: this is a helper function to convert a HEX-byte to
+	;     its equivalent two-byte char representation
+	;
+	;     input ".X", containing a HEX-byte to convert
+	;   outputs ".X" & ".Y", Y is MSB, X is LSB, print YX
+	txa
+	and #$f0
+	lsr
+	lsr
+	lsr
+	lsr
+	jsr checkpoint_nybltohex
+	tay ; safekeep the MSB in the .Y-register
+	txa
+	and #$0f
+	jsr checkpoint_nybltohex
+	tax ; safekeep the LSB in the .X-register
+	rts
+msb_bytetohex:
+	.byte 0
+lsb_bytetohex:
+	.byte 0
+;====	====
+; copied from mega65-core
+checkpoint_nybltohex:
+	and #$0f
+	ora #$30
+	cmp #$3a
+	bcs cpnth1
+	rts
+cpnth1:	adc #$06
+	rts
+
+;====	====
+checkpoint_bytetohex_and_print:
+	; BG: this is a helper function to print the ascii version of the HEX-byte
+	;
+	; .A should contain the hex value to convert and print
+	; .X is clobbered
+	; .Y is clobbered
+	tax
+	jsr checkpoint_bytetohex ; needs the byte in the .X-register
+	stx lsb_bytetohex
+	sty msb_bytetohex
+	; now print the two values
+	lda #$0d ; first a CR
+	jsr $ffd2 ; CHROUT
+	lda msb_bytetohex
+	jsr $ffd2 ; CHROUT
+	lda lsb_bytetohex
+	jsr $ffd2 ; CHROUT
+	rts
+
+
+
+	.scend
